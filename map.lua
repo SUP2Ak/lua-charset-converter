@@ -164,12 +164,13 @@ function map:utf8ToUnicode(str, pos)
     if code >= 0xC0 and code < 0xFE then
         local mask = 64
         code = code - 128
+
         repeat
-            local nextByte = str:byte(pos + size) or 0
+            local nextByte = str:byte(_pos + size) or 0
             if nextByte >= 0x80 and nextByte < 0xC0 then
                 code, size = (code - mask - 2) * 64 + nextByte, size + 1
             else
-                code, size = str:byte(pos), 1
+                code, size = str:byte(_pos), 1
             end
             mask = mask * 32
         until code < mask
@@ -183,13 +184,14 @@ end
 ---@return string
 function map:unicodeToUtf8(code)
     local t, h = {}, 128
+    local _code = code
 
-    while code >= h do
-        t[#t + 1] = 128 + (code % 64)
-        code = floor(code / 64)
+    while _code >= h do
+        t[#t + 1] = 128 + (_code % 64)
+        _code = floor(_code / 64)
     end
 
-    t[#t + 1] = 256 - 2 * h + code
+    t[#t + 1] = 256 - 2 * h + _code
     return char(unpack(t)):reverse()
 end
 
@@ -199,8 +201,10 @@ end
 function map:code1252ToUtf8(str1252)
     self:init()
     local result = {}
-    for pos = 1, #str1252 do
-        local code = str1252:byte(pos)
+    local str = str1252
+
+    for pos = 1, #str do
+        local code = str:byte(pos)
         local utf8_code = self:unicodeToUtf8(self.code1252_to_unicode[code] or code)
         result[#result + 1] = utf8_code
     end
@@ -214,8 +218,10 @@ end
 function map:utf8ToCode1252(utf8str)
     self:init()
     local result, pos = {}, 1
-    while pos <= #utf8str do
-        local code, size = self:utf8ToUnicode(utf8str, pos)
+    local str = utf8str
+
+    while pos <= #str do
+        local code, size = self:utf8ToUnicode(str, pos)
         pos = pos + size
         code = code < 128 and code or self.unicode_to_code1252[code] or ('?'):byte()
         result[#result + 1] = char(code)
