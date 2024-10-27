@@ -16,7 +16,7 @@
 To use the `lua-charset-converter` module, ensure you have Lua installed on your system. You can then include the module in your Lua scripts using:
 
 ```lua
-local map = require("map_module")
+local map = require("map")
 ```
 
 ### Usage
@@ -24,7 +24,7 @@ local map = require("map_module")
 Here are some examples of how to use the module:
 
 ```lua
-local map = require("map_module")
+local map = require("map")
 
 -- Convert Windows-1252 to UTF-8
 local utf8String = map:code1252ToUtf8("\x80\x81\x82\xA2\xA3")
